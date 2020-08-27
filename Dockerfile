@@ -2,6 +2,6 @@
 FROM golang
 RUN mkdir /app
 ADD . /app
-WORKDIR /app
-RUN go build ./cmd/simple-service/main.go
-CMD ["/app/main"]
+WORKDIR /app/cmd/simple-service
+RUN go build
+CMD ["/app/cmd/simple-service/simple-service"]

@@ -1,0 +1,9 @@
+<h1>Module 2</h1>
+
+<ul>
+  {{range $item := .}}
+    <li>
+      <a href="{{$item.Url}}" target="_blank">{{$item.Title}}</a>
+    </li>
+  {{end}}
+</ul>
