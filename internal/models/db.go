@@ -8,6 +8,10 @@ import (
 
 type DataStore interface {
 	AllMaterials() ([]*Material, error)
+	CreateMaterial(*Material) (int, error)
+	UpdateMaterial(*Material) error
+	DeleteMaterial(int) error
+	GetMaterial(int) (*Material, error)
 }
 
 type DB struct {

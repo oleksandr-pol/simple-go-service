@@ -7,12 +7,7 @@ import (
 	"github.com/oleksandr-pol/simple-go-service/internal/env"
 )
 
-type Material struct {
-	Url   string
-	Title string
-}
-
-func HandleMaterials(s *env.Server) (http.HandlerFunc, error) {
+func AllMaterialsHandler(s *env.Server) (http.HandlerFunc, error) {
 
 	// materials := []Material{
 	// 	{"https://golang.org/pkg/net/http/", "HTTP package"},
