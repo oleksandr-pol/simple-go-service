@@ -15,6 +15,7 @@ func CreateMaterialHandler(s *env.Server) http.HandlerFunc {
 
 		decoder := json.NewDecoder(r.Body)
 		if err := decoder.Decode(&m); err != nil {
+			s.Logger.BadRequestParams("Invalid request payload")
 			utils.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 			return
 		}
@@ -22,6 +23,7 @@ func CreateMaterialHandler(s *env.Server) http.HandlerFunc {
 
 		id, err := s.Db.CreateMaterial(&m)
 		if err != nil {
+			s.Logger.ServerError(err.Error())
 			utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}

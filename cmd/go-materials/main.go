@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/oleksandr-pol/simple-go-service/pkg/utils/logger"
 
 	"github.com/oleksandr-pol/simple-go-service/internal/env"
 	"github.com/oleksandr-pol/simple-go-service/internal/models"
@@ -32,9 +35,12 @@ func main() {
 		log.Panic(err)
 	}
 
+	standartLogger := logger.NewLogger(os.Stdout)
+
 	server := &env.Server{
 		Router: mux.NewRouter(),
 		Db:     db,
+		Logger: standartLogger,
 	}
 
 	setUpServer(server)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/oleksandr-pol/simple-go-service/internal/env"
 	"github.com/oleksandr-pol/simple-go-service/internal/handlers"
+	"github.com/oleksandr-pol/simple-go-service/internal/middleware"
 )
 
 func RegisterRoutes(s *env.Server) error {
@@ -15,9 +16,9 @@ func RegisterRoutes(s *env.Server) error {
 		return err
 	}
 
-	s.Router.HandleFunc("/materials", materialsHandler).Methods("GET")
-	s.Router.HandleFunc("/material", handlers.CreateMaterialHandler(s)).Methods("POST")
-	s.Router.HandleFunc("/material/{id}", handlers.UpdateMaterialHandler(s)).Methods("PUT")
-	s.Router.HandleFunc("/material/{id}", handlers.DeleteMaterialHandler(s)).Methods("DELETE")
+	s.Router.HandleFunc("/materials", middleware.LoggingHandler(s, materialsHandler)).Methods("GET")
+	s.Router.HandleFunc("/material", middleware.LoggingHandler(s, handlers.CreateMaterialHandler(s))).Methods("POST")
+	s.Router.HandleFunc("/material/{id}", middleware.LoggingHandler(s, handlers.UpdateMaterialHandler(s))).Methods("PUT")
+	s.Router.HandleFunc("/material/{id}", middleware.LoggingHandler(s, handlers.DeleteMaterialHandler(s))).Methods("DELETE")
 	return nil
 }

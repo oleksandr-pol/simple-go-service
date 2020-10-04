@@ -15,6 +15,7 @@ func DeleteMaterialHandler(s *env.Server) http.HandlerFunc {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
+			s.Logger.BadRequestParams("Invalid material ID")
 			utils.RespondWithError(w, http.StatusBadRequest, "Invalid material ID")
 			return
 		}
@@ -22,14 +23,17 @@ func DeleteMaterialHandler(s *env.Server) http.HandlerFunc {
 		if _, err := s.Db.GetMaterial(id); err != nil {
 			switch err {
 			case sql.ErrNoRows:
+				s.Logger.NotFound("Material", id)
 				utils.RespondWithError(w, http.StatusNotFound, "Material not found")
 			default:
+				s.Logger.ServerError(err.Error())
 				utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 			}
 			return
 		}
 
 		if err := s.Db.DeleteMaterial(id); err != nil {
+			s.Logger.ServerError(err.Error())
 			utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
