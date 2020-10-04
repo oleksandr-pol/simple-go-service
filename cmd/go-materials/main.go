@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/oleksandr-pol/simple-go-service/pkg/utils/logger"
+	"github.com/oleksandr-pol/simple-go-service/pkg/storage"
+
+	"github.com/oleksandr-pol/simple-go-service/pkg/logger"
 
 	"github.com/oleksandr-pol/simple-go-service/internal/env"
 	"github.com/oleksandr-pol/simple-go-service/internal/models"
@@ -36,11 +38,13 @@ func main() {
 	}
 
 	standartLogger := logger.NewLogger(os.Stdout)
+	memoryStorage := storage.NewStorage()
 
 	server := &env.Server{
-		Router: mux.NewRouter(),
-		Db:     db,
-		Logger: standartLogger,
+		Router:  mux.NewRouter(),
+		Db:      db,
+		Logger:  standartLogger,
+		Storage: memoryStorage,
 	}
 
 	setUpServer(server)
@@ -53,7 +57,7 @@ func setUpServer(s *env.Server) {
 
 	err := routes.RegisterRoutes(s)
 	if err != nil {
-		log.Fatal("Failed to set up routes")
+		s.Logger.ServerError(err.Error())
 	}
 
 	log.Println(fmt.Sprintf("Listing for requests at http://localhost:%d", port))

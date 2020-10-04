@@ -24,6 +24,10 @@ func (l *StandardLogger) RequestInfo(path string) {
 	l.Printf("New request: path - %s", path)
 }
 
+func (l *StandardLogger) CacheInfo(path string, duration string) {
+	l.Printf("New page cached: %s for %s\n", path, duration)
+}
+
 func (l *StandardLogger) BadRequestParams(msg string) {
 	l.Errorf("Bad request params: %s", msg)
 }
