@@ -11,6 +11,14 @@ import (
 	"github.com/oleksandr-pol/simple-go-service/pkg/storage"
 )
 
+type DbConfig struct {
+	DbHostName string
+	DbHostPort int
+	DbUserName string
+	DbPassword string
+	DbName     string
+}
+
 type Server struct {
 	Router  *mux.Router
 	Db      models.DataStore
@@ -18,19 +26,10 @@ type Server struct {
 	Storage *storage.Storage
 }
 
-func NewServer() *Server {
-	const (
-		hostname     = "localhost"
-		host_port    = 5432
-		username     = "oleksandr"
-		password     = "test"
-		databasename = "mentorship"
-	)
-
+func NewServer(c *DbConfig) *Server {
 	pg_con_string := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		hostname, host_port, username, password, databasename)
-	fmt.Println(pg_con_string)
+		c.DbHostName, c.DbHostPort, c.DbUserName, c.DbPassword, c.DbName)
 	db, err := models.NewDB(pg_con_string)
 
 	if err != nil {
