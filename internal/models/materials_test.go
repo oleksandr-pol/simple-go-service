@@ -17,7 +17,7 @@ func NewFakeDb() (*sql.DB, sqlmock.Sqlmock) {
 	return db, mock
 }
 
-var m = &Material{1, "https://github.com/oleksandr-pol/simple-go-service", "test"}
+var m = &Material{3, "https://github.com/oleksandr-pol/simple-go-service", "test"}
 
 func TestAllMaterials(t *testing.T) {
 	db, mock := NewFakeDb()
@@ -67,5 +67,54 @@ func TestCreateMaterial(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("Error while processing CreateMaterial method: %v", err.Error())
+	}
+}
+
+func TestUpdateMaterial(t *testing.T) {
+	db, mock := NewFakeDb()
+	repo := &DB{db}
+	defer db.Close()
+
+	sqlUpdate := `UPDATE materials SET url=$1, name=$2 WHERE id=$3`
+	mock.ExpectExec(sqlUpdate).WithArgs(m.Url, m.Title, m.Id).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	err := repo.UpdateMaterial(m)
+
+	if err != nil {
+		t.Errorf("Repository does not update material: %v", err.Error())
+	}
+}
+
+func TestDeleteMaterial(t *testing.T) {
+	db, mock := NewFakeDb()
+	repo := &DB{db}
+	defer db.Close()
+
+	mock.ExpectExec("DELETE FROM materials WHERE id=$1").WithArgs(m.Id).WillReturnResult(sqlmock.NewResult(1, 1))
+	err := repo.DeleteMaterial(m.Id)
+
+	if err != nil {
+		t.Errorf("Repository does not delete material: %v", err.Error())
+	}
+}
+
+func TestGetMaterial(t *testing.T) {
+	db, mock := NewFakeDb()
+	repo := &DB{db}
+	defer db.Close()
+
+	rows := sqlmock.NewRows([]string{"id", "url", "title"}).
+		AddRow(m.Id, m.Url, m.Title)
+
+	mock.ExpectQuery("SELECT url, name FROM materials WHERE id=$1").WithArgs(m.Id).WillReturnRows(rows)
+
+	res, err := repo.GetMaterial(m.Id)
+
+	if res == nil {
+		t.Error("Repository does not return material")
+	}
+
+	if err != nil {
+		t.Errorf("Error while processing GetMaterial: %v", err.Error())
 	}
 }
