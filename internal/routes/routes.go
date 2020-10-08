@@ -14,7 +14,7 @@ func RegisterRoutes(s *env.Server, cacheExpireTime string) error {
 		return err
 	}
 
-	cachedMaterials := middleware.CacheHandler(s, cacheExpireTime, materialsHandler)
+	cachedMaterials := middleware.CacheHandler(s.Logger, s.Storage, cacheExpireTime, materialsHandler)
 
 	s.Router.HandleFunc("/materials", middleware.LoggingHandler(s.Logger, cachedMaterials)).Methods(http.MethodGet)
 	s.Router.HandleFunc("/material", middleware.LoggingHandler(s.Logger, handlers.CreateMaterialHandler(s))).Methods(http.MethodPost)

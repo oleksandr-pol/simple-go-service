@@ -23,7 +23,7 @@ type Server struct {
 	Router  *mux.Router
 	Db      models.DataStore
 	Logger  logger.Logger
-	Storage *storage.Storage
+	Storage storage.MemoryStorage
 }
 
 func NewServer(c *DbConfig) *Server {

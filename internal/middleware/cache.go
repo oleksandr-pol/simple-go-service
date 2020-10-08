@@ -5,15 +5,17 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/oleksandr-pol/simple-go-service/internal/env"
+	"github.com/oleksandr-pol/simple-go-service/pkg/storage"
+
+	"github.com/oleksandr-pol/simple-go-service/pkg/logger"
 )
 
-func CacheHandler(s *env.Server, duration string, next http.HandlerFunc) http.HandlerFunc {
+func CacheHandler(l logger.Logger, s storage.MemoryStorage, duration string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		content := s.Storage.Get(r.RequestURI)
+		content := s.Get(r.RequestURI)
 
 		if content != nil {
-			s.Logger.Info("served from cache")
+			l.Info("served from cache")
 			w.Write(content)
 		} else {
 			c := httptest.NewRecorder()
@@ -27,10 +29,10 @@ func CacheHandler(s *env.Server, duration string, next http.HandlerFunc) http.Ha
 			content := c.Body.Bytes()
 
 			if d, err := time.ParseDuration(duration); err == nil {
-				s.Logger.CacheInfo(r.URL.Path, duration)
-				s.Storage.Set(r.RequestURI, content, d)
+				l.CacheInfo(r.URL.Path, duration)
+				s.Set(r.RequestURI, content, d)
 			} else {
-				s.Logger.ServerError("wrong time format for storage")
+				l.ServerError("wrong time format for storage")
 			}
 
 			w.Write(content)

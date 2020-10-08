@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+type MemoryStorage interface {
+	Get(key string) []byte
+	Set(key string, content []byte, duration time.Duration)
+}
+
 type Item struct {
 	Content    []byte
 	Expiration int64
