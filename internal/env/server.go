@@ -22,7 +22,7 @@ type DbConfig struct {
 type Server struct {
 	Router  *mux.Router
 	Db      models.DataStore
-	Logger  *logger.StandardLogger
+	Logger  logger.Logger
 	Storage *storage.Storage
 }
 

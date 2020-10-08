@@ -6,6 +6,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type Logger interface {
+	RequestInfo(string)
+	CacheInfo(string, string)
+	BadRequestParams(string)
+	NotFound(string, int)
+	ServerError(string)
+	Info(string)
+	Fatal(error)
+}
+
 type StandardLogger struct {
 	*logrus.Logger
 }
@@ -38,4 +48,12 @@ func (l *StandardLogger) NotFound(entityName string, id int) {
 
 func (l *StandardLogger) ServerError(err string) {
 	l.Errorf("Server error: %s", err)
+}
+
+func (l *StandardLogger) Info(msg string) {
+	l.Infof("%s", msg)
+}
+
+func (l *StandardLogger) Fatal(err error) {
+	l.Fatalf("%v", err)
 }

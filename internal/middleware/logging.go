@@ -3,12 +3,12 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/oleksandr-pol/simple-go-service/internal/env"
+	"github.com/oleksandr-pol/simple-go-service/pkg/logger"
 )
 
-func LoggingHandler(s *env.Server, next http.HandlerFunc) http.HandlerFunc {
+func LoggingHandler(l logger.Logger, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s.Logger.RequestInfo(r.URL.Path)
+		l.RequestInfo(r.URL.Path)
 		next.ServeHTTP(w, r)
 	}
 }
