@@ -4,10 +4,11 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/oleksandr-pol/simple-go-service/internal/env"
+	"github.com/oleksandr-pol/simple-go-service/internal/models"
+	"github.com/oleksandr-pol/simple-go-service/pkg/logger"
 )
 
-func AllMaterialsHandler(s *env.Server) (http.HandlerFunc, error) {
+func AllMaterialsHandler(db models.DataStore, l logger.Logger) (http.HandlerFunc, error) {
 	tpl, tplErr := template.ParseFiles("./web/templates/materials.html")
 
 	if tplErr != nil {
@@ -15,9 +16,9 @@ func AllMaterialsHandler(s *env.Server) (http.HandlerFunc, error) {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		materials, err := s.Db.AllMaterials()
+		materials, err := db.AllMaterials()
 		if err != nil {
-			s.Logger.ServerError(err.Error())
+			l.ServerError(err.Error())
 			http.Error(w, http.StatusText(500), 500)
 
 			return

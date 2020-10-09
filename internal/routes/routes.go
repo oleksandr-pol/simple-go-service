@@ -9,7 +9,7 @@ import (
 )
 
 func RegisterRoutes(s *env.Server, cacheExpireTime string) error {
-	materialsHandler, err := handlers.AllMaterialsHandler(s)
+	materialsHandler, err := handlers.AllMaterialsHandler(s.Db, s.Logger)
 	if err != nil {
 		return err
 	}
