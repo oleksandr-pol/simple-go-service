@@ -35,4 +35,13 @@ func TestCreateMaterialHandler(t *testing.T) {
 	if rr.Code != http.StatusCreated {
 		t.Errorf("Wrong status code: got %v, expected %v", rr.Code, http.StatusCreated)
 	}
+
+	badReq := httptest.NewRequest(http.MethodPost, "/material", bytes.NewReader([]byte{}))
+	rr1 := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr1, badReq)
+
+	if rr1.Code != http.StatusBadRequest {
+		t.Errorf("Wrong status code: got %v, expected %v", rr1.Code, http.StatusBadRequest)
+	}
 }

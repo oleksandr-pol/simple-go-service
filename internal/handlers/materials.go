@@ -9,7 +9,7 @@ import (
 )
 
 func AllMaterialsHandler(db models.DataStore, l logger.Logger) (http.HandlerFunc, error) {
-	tpl, tplErr := template.ParseFiles("./web/templates/materials.html")
+	tpl, tplErr := template.ParseFiles("/Users/oleksandr/go-mentorship/simple-go-service/web/templates/materials.html")
 
 	if tplErr != nil {
 		return nil, tplErr
