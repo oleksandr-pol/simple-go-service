@@ -5,35 +5,37 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/oleksandr-pol/simple-go-service/internal/models"
+	"github.com/oleksandr-pol/simple-go-service/pkg/logger"
+
 	"github.com/gorilla/mux"
-	"github.com/oleksandr-pol/simple-go-service/internal/env"
 	"github.com/oleksandr-pol/simple-go-service/pkg/utils"
 )
 
-func DeleteMaterialHandler(s *env.Server) http.HandlerFunc {
+func DeleteMaterialHandler(db models.DataStore, l logger.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
-			s.Logger.BadRequestParams("Invalid material ID")
+			l.BadRequestParams("Invalid material ID")
 			utils.RespondWithError(w, http.StatusBadRequest, "Invalid material ID")
 			return
 		}
 
-		if _, err := s.Db.GetMaterial(id); err != nil {
+		if _, err := db.GetMaterial(id); err != nil {
 			switch err {
 			case sql.ErrNoRows:
-				s.Logger.NotFound("Material", id)
+				l.NotFound("Material", id)
 				utils.RespondWithError(w, http.StatusNotFound, "Material not found")
 			default:
-				s.Logger.ServerError(err.Error())
+				l.ServerError(err.Error())
 				utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 			}
 			return
 		}
 
-		if err := s.Db.DeleteMaterial(id); err != nil {
-			s.Logger.ServerError(err.Error())
+		if err := db.DeleteMaterial(id); err != nil {
+			l.ServerError(err.Error())
 			utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
