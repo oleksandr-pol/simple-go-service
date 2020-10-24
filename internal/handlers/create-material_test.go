@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,6 +16,18 @@ import (
 func TestCreateMaterialHandler(t *testing.T) {
 	l := &mock.FakeLogger{}
 	db := &mock.FakeDB{}
+	var resErr error
+
+	resErr = invalidBodyRequest(l, db)
+	if resErr != nil {
+		t.Error(resErr)
+	}
+
+	resErr = dbErrorTest(l, db)
+	if resErr != nil {
+		t.Error(resErr)
+	}
+
 	material := &models.Material{Id: 1, Url: "test", Title: "test"}
 	json, parseErr := json.Marshal(material)
 	if parseErr != nil {
@@ -67,4 +80,35 @@ func BenchmarkCreateMaterialHandler(b *testing.B) {
 		handler.ServeHTTP(rr1, badReq)
 	}
 
+}
+
+func invalidBodyRequest(l *mock.FakeLogger, db *mock.FakeDB) error {
+	req, _ := http.NewRequest(http.MethodPost, "/material", bytes.NewBuffer([]byte("invalid")))
+	rr := httptest.NewRecorder()
+	handler := CreateMaterialHandler(db, l)
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusBadRequest {
+		return fmt.Errorf("Wrong status code: got %v, expected %v", rr.Code, http.StatusBadRequest)
+	}
+
+	return nil
+}
+
+func dbErrorTest(l *mock.FakeLogger, db *mock.FakeDB) error {
+	material := &models.Material{Id: 1, Url: "err", Title: "err"}
+	json, _ := json.Marshal(material)
+
+	req, _ := http.NewRequest(http.MethodPost, "/material", bytes.NewBuffer(json))
+	rr := httptest.NewRecorder()
+	handler := CreateMaterialHandler(db, l)
+
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusInternalServerError {
+		return fmt.Errorf("Wrong status code: got %v, expected %v", rr.Code, http.StatusInternalServerError)
+	}
+
+	return nil
 }

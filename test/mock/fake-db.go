@@ -1,6 +1,10 @@
 package mock
 
-import "github.com/oleksandr-pol/simple-go-service/internal/models"
+import (
+	"errors"
+
+	"github.com/oleksandr-pol/simple-go-service/internal/models"
+)
 
 type FakeDB struct{}
 
@@ -12,6 +16,9 @@ func (db *FakeDB) AllMaterials() ([]*models.Material, error) {
 }
 
 func (db *FakeDB) CreateMaterial(m *models.Material) (int, error) {
+	if m.Title == "err" {
+		return 0, errors.New("failed to create material")
+	}
 	return 1, nil
 }
 
