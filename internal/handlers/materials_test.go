@@ -20,7 +20,7 @@ func TestMaterials(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 
-	handler, handlerErr := AllMaterialsHandler(db, l)
+	handler, handlerErr := AllMaterialsHandler(db, l, "/Users/oleksandr/go-mentorship/simple-go-service/web/templates/materials.html")
 	if handlerErr != nil {
 		t.Fatal(err.Error())
 	}

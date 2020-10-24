@@ -8,8 +8,8 @@ import (
 	"github.com/oleksandr-pol/simple-go-service/pkg/logger"
 )
 
-func AllMaterialsHandler(db models.DataStore, l logger.Logger) (http.HandlerFunc, error) {
-	tpl, tplErr := template.ParseFiles("/Users/oleksandr/go-mentorship/simple-go-service/web/templates/materials.html")
+func AllMaterialsHandler(db models.DataStore, l logger.Logger, tplPath string) (http.HandlerFunc, error) {
+	tpl, tplErr := template.ParseFiles(tplPath)
 
 	if tplErr != nil {
 		return nil, tplErr
