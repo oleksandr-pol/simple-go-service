@@ -45,3 +45,26 @@ func TestCreateMaterialHandler(t *testing.T) {
 		t.Errorf("Wrong status code: got %v, expected %v", rr1.Code, http.StatusBadRequest)
 	}
 }
+
+func BenchmarkCreateMaterialHandler(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		l := &mock.FakeLogger{}
+		db := &mock.FakeDB{}
+		material := &models.Material{Id: 1, Url: "test", Title: "test"}
+		json, _ := json.Marshal(material)
+
+		req, _ := http.NewRequest(http.MethodPost, "/material", bytes.NewBuffer(json))
+
+		rr := httptest.NewRecorder()
+
+		handler := CreateMaterialHandler(db, l)
+
+		handler.ServeHTTP(rr, req)
+
+		badReq := httptest.NewRequest(http.MethodPost, "/material", bytes.NewReader([]byte{}))
+		rr1 := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr1, badReq)
+	}
+
+}

@@ -30,3 +30,20 @@ func TestDeleteMaterialHandler(t *testing.T) {
 		t.Errorf("Wrong status code: got %v, expected %v", rr.Code, 200)
 	}
 }
+
+func BenchmarkMaterialHandler(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		var r *http.Request
+		l := &mock.FakeLogger{}
+		db := &mock.FakeDB{}
+		urlParam := map[string]string{"id": "1"}
+		r, _ = http.NewRequest(http.MethodDelete, "/material/{id}", nil)
+		r = mux.SetURLVars(r, urlParam)
+
+		rr := httptest.NewRecorder()
+
+		handler := DeleteMaterialHandler(db, l)
+
+		handler.ServeHTTP(rr, r)
+	}
+}
